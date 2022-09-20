@@ -6,8 +6,9 @@
         <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
         <meta name="mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-capable" content="yes">
-        <link rel="stylesheet" href="css/leaflet.css">
+        <link rel="stylesheet" href="css/leaflet.css"><link rel="stylesheet" href="css/L.Control.Locate.min.css">
         <link rel="stylesheet" href="css/qgis2web.css"><link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/leaflet-control-geocoder.Geocoder.css">
         <link rel="stylesheet" href="css/leaflet-measure.css">
         <style>
         html, body, #map {
@@ -23,9 +24,7 @@
         <div id="map">
         </div>
         <script src="js/qgis2web_expressions.js"></script>
-        <script src="js/leaflet.js"></script>
-        <script src="js/multi-style-layer.js"></script>
-        <script src="js/leaflet-svg-shape-markers.min.js"></script>
+        <script src="js/leaflet.js"></script><script src="js/L.Control.Locate.min.js"></script>
         <script src="js/leaflet.rotatedMarker.js"></script>
         <script src="js/leaflet.pattern.js"></script>
         <script src="js/leaflet-hash.js"></script>
@@ -33,10 +32,11 @@
         <script src="js/rbush.min.js"></script>
         <script src="js/labelgun.min.js"></script>
         <script src="js/labels.js"></script>
+        <script src="js/leaflet-control-geocoder.Geocoder.js"></script>
         <script src="js/leaflet-measure.js"></script>
+        <script src="data/_1.js"></script>
         <script src="data/_2.js"></script>
         <script src="data/_3.js"></script>
-        <script src="data/_4.js"></script>
         <script>
         var highlightLayer;
         function highlightFeature(e) {
@@ -55,11 +55,12 @@
             highlightLayer.openPopup();
         }
         var map = L.map('map', {
-            zoomControl:true, maxZoom:28, minZoom:8
-        }).fitBounds([[29.438929454541174,33.63066002077882],[31.37767179854118,36.77826523809648]]);
+            zoomControl:true, maxZoom:13, minZoom:8
+        }).fitBounds([[29.550692248489405,33.61697478070353],[31.48943459248941,36.76457999802119]]);
         var hash = new L.Hash(map);
         map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
         var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        L.control.locate({locateOptions: {maxZoom: 19}}).addTo(map);
         var measureControl = new L.Control.Measure({
             position: 'topleft',
             primaryLengthUnit: 'meters',
@@ -75,32 +76,70 @@
         var bounds_group = new L.featureGroup([]);
         function setBounds() {
         }
-        map.createPane('pane_GoogleSatelliteHybrid_0');
-        map.getPane('pane_GoogleSatelliteHybrid_0').style.zIndex = 400;
-        var layer_GoogleSatelliteHybrid_0 = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
-            pane: 'pane_GoogleSatelliteHybrid_0',
+        map.createPane('pane_GoogleSatellite_0');
+        map.getPane('pane_GoogleSatellite_0').style.zIndex = 400;
+        var layer_GoogleSatellite_0 = L.tileLayer('https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+            pane: 'pane_GoogleSatellite_0',
             opacity: 1.0,
             attribution: '',
             minZoom: 8,
-            maxZoom: 28,
+            maxZoom: 13,
             minNativeZoom: 0,
             maxNativeZoom: 19
         });
-        layer_GoogleSatelliteHybrid_0;
-        map.addLayer(layer_GoogleSatelliteHybrid_0);
-        map.createPane('pane_OSMStandard_1');
-        map.getPane('pane_OSMStandard_1').style.zIndex = 401;
-        var layer_OSMStandard_1 = L.tileLayer('http://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            pane: 'pane_OSMStandard_1',
-            opacity: 1.0,
-            attribution: '<a href="https://www.openstreetmap.org/copyright">© OpenStreetMap contributors, CC-BY-SA</a>',
-            minZoom: 8,
-            maxZoom: 28,
-            minNativeZoom: 0,
-            maxNativeZoom: 19
+        layer_GoogleSatellite_0;
+        map.addLayer(layer_GoogleSatellite_0);
+        function pop__1(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['MUN_HEB'] !== null ? autolinker.link(feature.properties['MUN_HEB'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style__1_0() {
+            return {
+                pane: 'pane__1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0, 
+                fillOpacity: 0,
+                interactive: true,
+            }
+        }
+        map.createPane('pane__1');
+        map.getPane('pane__1').style.zIndex = 401;
+        map.getPane('pane__1').style['mix-blend-mode'] = 'normal';
+        var layer__1 = new L.geoJson(json__1, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json__1',
+            layerName: 'layer__1',
+            pane: 'pane__1',
+            onEachFeature: pop__1,
+            style: style__1_0,
         });
-        layer_OSMStandard_1;
-        map.addLayer(layer_OSMStandard_1);
+        bounds_group.addLayer(layer__1);
+        map.addLayer(layer__1);
         function pop__2(feature, layer) {
             layer.on({
                 mouseout: function(e) {
@@ -119,83 +158,12 @@
             });
             var popupContent = '<table>\
                     <tr>\
-                        <td colspan="2">' + (feature.properties['MUN_ENG'] !== null ? autolinker.link(feature.properties['MUN_ENG'].toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <td colspan="2">' + (feature.properties['MUN_HEB'] !== null ? autolinker.link(feature.properties['MUN_HEB'].toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <td colspan="2">' + (feature.properties['Shape_Leng'] !== null ? autolinker.link(feature.properties['Shape_Leng'].toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <td colspan="2">' + (feature.properties['Shape_Area'] !== null ? autolinker.link(feature.properties['Shape_Area'].toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <td colspan="2">' + (feature.properties['Field'] !== null ? autolinker.link(feature.properties['Field'].toLocaleString()) : '') + '</td>\
-                    </tr>\
-                </table>';
-            layer.bindPopup(popupContent, {maxHeight: 400});
-        }
-
-        function style__2_0() {
-            return {
-                pane: 'pane__2',
-                opacity: 1,
-                color: 'rgba(35,35,35,1.0)',
-                dashArray: '',
-                lineCap: 'butt',
-                lineJoin: 'miter',
-                weight: 2.0, 
-                fillOpacity: 0,
-                interactive: true,
-            }
-        }
-        map.createPane('pane__2');
-        map.getPane('pane__2').style.zIndex = 402;
-        map.getPane('pane__2').style['mix-blend-mode'] = 'normal';
-        var layer__2 = new L.geoJson(json__2, {
-            attribution: '',
-            interactive: true,
-            dataVar: 'json__2',
-            layerName: 'layer__2',
-            pane: 'pane__2',
-            onEachFeature: pop__2,
-            style: style__2_0,
-        });
-        bounds_group.addLayer(layer__2);
-        map.addLayer(layer__2);
-        function pop__3(feature, layer) {
-            layer.on({
-                mouseout: function(e) {
-                    for (i in e.target._eventParents) {
-                        e.target._eventParents[i].resetStyle(e.target);
-                    }
-                    if (typeof layer.closePopup == 'function') {
-                        layer.closePopup();
-                    } else {
-                        layer.eachLayer(function(feature){
-                            feature.closePopup()
-                        });
-                    }
-                },
-                mouseover: highlightFeature,
-            });
-            var popupContent = '<table>\
-                    <tr>\
-                        <th scope="row">אזור</th>\
-                        <td>' + (feature.properties['אזור'] !== null ? autolinker.link(feature.properties['אזור'].toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
                         <th scope="row">שם המאבק</th>\
                         <td>' + (feature.properties['שם המאבק'] !== null ? autolinker.link(feature.properties['שם המאבק'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
                         <th scope="row">סטטוס</th>\
                         <td>' + (feature.properties['סטטוס'] !== null ? autolinker.link(feature.properties['סטטוס'].toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <th scope="row">מיקום גיאוגרפי</th>\
-                        <td>' + (feature.properties['מיקום גיאוגרפי'] !== null ? autolinker.link(feature.properties['מיקום גיאוגרפי'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
                         <th scope="row">במה נאבקים</th>\
@@ -226,71 +194,50 @@
                         <td>' + (feature.properties['מה נדרש לעשות'] !== null ? autolinker.link(feature.properties['מה נדרש לעשות'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <td colspan="2">' + (feature.properties['קישורים'] !== null ? autolinker.link(feature.properties['קישורים'].toLocaleString()) : '') + '</td>\
+                        <th scope="row">קישורים</th>\
+                        <td>' + (feature.properties['קישורים'] !== null ? '<img src="images/' + String(feature.properties['קישורים']).replace(/[\\\/:]/g, '_').trim() + '">' : '') + '</td>\
                     </tr>\
                 </table>';
             layer.bindPopup(popupContent, {maxHeight: 400});
         }
 
-        function style__3_0() {
+        function style__2_0() {
             return {
-                pane: 'pane__3',
-                radius: 6.233333333333332,
+                pane: 'pane__2',
+                radius: 8.0,
                 opacity: 1,
-                color: 'rgba(184,8,8,1.0)',
+                color: 'rgba(128,17,25,1.0)',
                 dashArray: '',
                 lineCap: 'butt',
                 lineJoin: 'miter',
-                weight: 1.0,
+                weight: 2.0,
                 fill: true,
                 fillOpacity: 1,
-                fillColor: 'rgba(184,8,8,1.0)',
+                fillColor: 'rgba(219,30,42,1.0)',
                 interactive: true,
             }
         }
-        function style__3_1() {
-            return {
-                pane: 'pane__3',
-                radius: 6.8,
-                opacity: 1,
-                color: 'rgba(255,0,0,1.0)',
-                dashArray: '',
-                lineCap: 'butt',
-                lineJoin: 'miter',
-                weight: 1.0,
-                fill: true,
-                fillOpacity: 1,
-                fillColor: 'rgba(255,0,0,1.0)',
-                interactive: true,
-            }
-        }
-        map.createPane('pane__3');
-        map.getPane('pane__3').style.zIndex = 403;
-        map.getPane('pane__3').style['mix-blend-mode'] = 'normal';
-        var layer__3 = new L.geoJson.multiStyle(json__3, {
+        map.createPane('pane__2');
+        map.getPane('pane__2').style.zIndex = 402;
+        map.getPane('pane__2').style['mix-blend-mode'] = 'normal';
+        var layer__2 = new L.geoJson(json__2, {
             attribution: '',
             interactive: true,
-            dataVar: 'json__3',
-            layerName: 'layer__3',
-            pane: 'pane__3',
-            onEachFeature: pop__3,
-            pointToLayers: [function (feature, latlng) {
+            dataVar: 'json__2',
+            layerName: 'layer__2',
+            pane: 'pane__2',
+            onEachFeature: pop__2,
+            pointToLayer: function (feature, latlng) {
                 var context = {
                     feature: feature,
                     variables: {}
                 };
-                return L.shapeMarker(latlng, style__3_0(feature));
-            },function (feature, latlng) {
-                var context = {
-                    feature: feature,
-                    variables: {}
-                };
-                return L.shapeMarker(latlng, style__3_1(feature));
+                return L.circleMarker(latlng, style__2_0(feature));
             },
-        ]});
-        bounds_group.addLayer(layer__3);
-        map.addLayer(layer__3);
-        function pop__4(feature, layer) {
+        });
+        bounds_group.addLayer(layer__2);
+        map.addLayer(layer__2);
+        function pop__3(feature, layer) {
             layer.on({
                 mouseout: function(e) {
                     for (i in e.target._eventParents) {
@@ -308,63 +255,40 @@
             });
             var popupContent = '<table>\
                     <tr>\
-                        <th scope="row">Id</th>\
-                        <td>' + (feature.properties['Id'] !== null ? autolinker.link(feature.properties['Id'].toLocaleString()) : '') + '</td>\
+                        <td colspan="2">' + (feature.properties['Id'] !== null ? autolinker.link(feature.properties['Id'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <th scope="row">אזור</th>\
-                        <td>' + (feature.properties['אזור'] !== null ? autolinker.link(feature.properties['אזור'].toLocaleString()) : '') + '</td>\
+                        <th scope="row">שם המאבק</th>\
+                        <td>' + (feature.properties['שם המאבק'] !== null ? autolinker.link(feature.properties['שם המאבק'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <th scope="row">Field</th>\
-                        <td>' + (feature.properties['Field'] !== null ? autolinker.link(feature.properties['Field'].toLocaleString()) : '') + '</td>\
+                        <td colspan="2">' + (feature.properties['מועצות אזוריות'] !== null ? autolinker.link(feature.properties['מועצות אזוריות'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <th scope="row">שם המ�</th>\
-                        <td>' + (feature.properties['שם המ�'] !== null ? autolinker.link(feature.properties['שם המ�'].toLocaleString()) : '') + '</td>\
+                        <td colspan="2">' + (feature.properties['על מה נאבקים'] !== null ? autolinker.link(feature.properties['על מה נאבקים'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <th scope="row">מיקום</th>\
-                        <td>' + (feature.properties['מיקום'] !== null ? autolinker.link(feature.properties['מיקום'].toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <th scope="row">במהנא</th>\
-                        <td>' + (feature.properties['במהנא'] !== null ? autolinker.link(feature.properties['במהנא'].toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <th scope="row">על מנ�</th>\
-                        <td>' + (feature.properties['על מנ�'] !== null ? autolinker.link(feature.properties['על מנ�'].toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <th scope="row">מצב מ�</th>\
-                        <td>' + (feature.properties['מצב מ�'] !== null ? autolinker.link(feature.properties['מצב מ�'].toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <th scope="row">פעילי</th>\
-                        <td>' + (feature.properties['פעילי'] !== null ? autolinker.link(feature.properties['פעילי'].toLocaleString()) : '') + '</td>\
+                        <th scope="row">מצב משפטי</th>\
+                        <td>' + (feature.properties['מצב משפטי'] !== null ? autolinker.link(feature.properties['מצב משפטי'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
                         <th scope="row">סטטוס</th>\
                         <td>' + (feature.properties['סטטוס'] !== null ? autolinker.link(feature.properties['סטטוס'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <th scope="row">עמדת �</th>\
-                        <td>' + (feature.properties['עמדת �'] !== null ? autolinker.link(feature.properties['עמדת �'].toLocaleString()) : '') + '</td>\
+                        <td colspan="2">' + (feature.properties['עמדת המועצה המקומית'] !== null ? autolinker.link(feature.properties['עמדת המועצה המקומית'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <th scope="row">ארגונ</th>\
-                        <td>' + (feature.properties['ארגונ'] !== null ? autolinker.link(feature.properties['ארגונ'].toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <td colspan="2">' + (feature.properties['מהנדר'] !== null ? autolinker.link(feature.properties['מהנדר'].toLocaleString()) : '') + '</td>\
+                        <th scope="row">ארגונים פעילים</th>\
+                        <td>' + (feature.properties['ארגונים פעילים'] !== null ? autolinker.link(feature.properties['ארגונים פעילים'].toLocaleString()) : '') + '</td>\
                     </tr>\
                 </table>';
             layer.bindPopup(popupContent, {maxHeight: 400});
         }
 
-        function style__4_0() {
+        function style__3_0() {
             return {
-                pane: 'pane__4',
+                pane: 'pane__3',
                 opacity: 1,
                 color: 'rgba(189,35,35,1.0)',
                 dashArray: '10,5',
@@ -375,45 +299,55 @@
                 interactive: true,
             }
         }
-        map.createPane('pane__4');
-        map.getPane('pane__4').style.zIndex = 404;
-        map.getPane('pane__4').style['mix-blend-mode'] = 'normal';
-        var layer__4 = new L.geoJson(json__4, {
+        map.createPane('pane__3');
+        map.getPane('pane__3').style.zIndex = 403;
+        map.getPane('pane__3').style['mix-blend-mode'] = 'normal';
+        var layer__3 = new L.geoJson(json__3, {
             attribution: '',
             interactive: true,
-            dataVar: 'json__4',
-            layerName: 'layer__4',
-            pane: 'pane__4',
-            onEachFeature: pop__4,
-            style: style__4_0,
+            dataVar: 'json__3',
+            layerName: 'layer__3',
+            pane: 'pane__3',
+            onEachFeature: pop__3,
+            style: style__3_0,
         });
-        bounds_group.addLayer(layer__4);
-        map.addLayer(layer__4);
+        bounds_group.addLayer(layer__3);
+        map.addLayer(layer__3);
+        var osmGeocoder = new L.Control.Geocoder({
+            collapsed: true,
+            position: 'topleft',
+            text: 'Search',
+            title: 'Testing'
+        }).addTo(map);
+        document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
+        .className += ' fa fa-search';
+        document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
+        .title += 'Search for a place';
         var baseMaps = {};
-        L.control.layers(baseMaps,{'<img src="legend/_4.png" /> מאבקים חוצי גבולות': layer__4,'<img src="legend/_3.png" /> מאבקים סביבתיים': layer__3,'<img src="legend/_2.png" /> אזורי שיפוט': layer__2,"OSM Standard": layer_OSMStandard_1,"Google Satellite Hybrid": layer_GoogleSatelliteHybrid_0,}).addTo(map);
+        L.control.layers(baseMaps,{'<img src="legend/_3.png" /> מאבקים חוצי גבולות': layer__3,'<img src="legend/_2.png" /> מאבקים סביבתיים': layer__2,'<img src="legend/_1.png" /> אזורי שיפוט': layer__1,"Google Satellite": layer_GoogleSatellite_0,}).addTo(map);
         setBounds();
         var i = 0;
-        layer__2.eachLayer(function(layer) {
+        layer__1.eachLayer(function(layer) {
             var context = {
                 feature: layer.feature,
                 variables: {}
             };
-            layer.bindTooltip((layer.feature.properties['MUN_HEB'] !== null?String('<div style="color: #000000; font-size: 10pt; font-family: \'MS Shell Dlg 2\', sans-serif;">' + layer.feature.properties['MUN_HEB']) + '</div>':''), {permanent: true, offset: [-0, -16], className: 'css__2'});
+            layer.bindTooltip((layer.feature.properties['MUN_HEB'] !== null?String('<div style="color: #000000; font-size: 10pt; font-family: \'MS Shell Dlg 2\', sans-serif;">' + layer.feature.properties['MUN_HEB']) + '</div>':''), {permanent: true, offset: [-0, -16], className: 'css__1'});
             labels.push(layer);
             totalMarkers += 1;
               layer.added = true;
               addLabel(layer, i);
               i++;
         });
-        resetLabels([layer__2]);
+        resetLabels([layer__1]);
         map.on("zoomend", function(){
-            resetLabels([layer__2]);
+            resetLabels([layer__1]);
         });
         map.on("layeradd", function(){
-            resetLabels([layer__2]);
+            resetLabels([layer__1]);
         });
         map.on("layerremove", function(){
-            resetLabels([layer__2]);
+            resetLabels([layer__1]);
         });
         </script>
     </body>
